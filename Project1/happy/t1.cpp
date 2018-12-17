@@ -146,13 +146,12 @@ void vertical_v() {
 	
 }
 
+
+
 int main(){
 	std::cout << "Starting" << std::endl;
 	openfile("happy\\bunny_iH.ply2");
 	vertical_v();
-	//for (int i = 0; i < 100; i++) {
-	//	std::cout << indices[i] << std::endl;
-	//}
 
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -206,9 +205,25 @@ int main(){
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
+	//
+	GLfloat points_test[] = {
+		0.75f, 0.75f, 0.0f
+	};
+
+	GLuint VAO1, VBO1;
+	glGenVertexArrays(1, &VAO1);
+	glGenBuffers(1, &VBO1);
+	glBindVertexArray(VAO1);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO1);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(points_test), points_test, GL_STATIC_DRAW);
+   //
+
+
+
 
 
 	while (!glfwWindowShouldClose(window)){
+	
 		GLfloat currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
@@ -217,8 +232,11 @@ int main(){
 		movement();
 
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		//glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
+
+
 
 		ourShader.Use();
 
@@ -228,11 +246,6 @@ int main(){
 		glUniform3f(objectColorLoc, 1.0f, 0.5f, 0.31f);
 		glUniform3f(lightColorLoc, 1.0f, 0.5f, 1.0f);
 		glUniform3f(lightPosLoc, -50.0f, 50.0f, -50.0f);
-
-	
-		
-		
-
 
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 		view = glm::lookAt(cameraPos, cameraFront, cameraUp);
@@ -249,8 +262,18 @@ int main(){
 
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, indice_index, GL_UNSIGNED_INT, 0);
-		
 		glBindVertexArray(0);
+       
+		//
+		glBindVertexArray(VAO1);
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO1);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), (GLvoid*)0);
+		glDrawArrays(GL_POINTS, 0, 1);
+		glDisableVertexAttribArray(0);
+		glBindVertexArray(0);
+		//
+
 		glfwSwapBuffers(window);
 	}
 
@@ -260,6 +283,7 @@ int main(){
 	glfwTerminate();
 	return 0;
 }
+
 
 
 void test_mat( ) {//测试每个点经过变化后的投影
@@ -309,7 +333,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 void mouse_pos(GLFWwindow* window, GLdouble x, GLdouble y){
-	
 	mouse_x = x;
 	mouse_y = HEIGHT - y;
 }
@@ -321,6 +344,7 @@ void mouse_callback(GLFWwindow* window, int key, int action, int hold) {
 		now_vec = glm::vec4(float(mouse_x), float(mouse_y), mouse_z, 1.0f);
 		now_vec = glm::inverse(model) * glm::inverse(view) * glm::inverse(projection) * now_vec;
 
+	
 		std::cout << "the corrod_x is:" << std::endl;
 		std::cout << mouse_x << std::endl;
 		std::cout << "; the corrod_y is:" << std::endl;
