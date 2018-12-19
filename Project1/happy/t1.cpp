@@ -23,6 +23,7 @@ glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 glm::mat4 model(1.f);
 glm::mat4 view(1.f);
 glm::mat4 projection(1.f);
+glm::vec3 chosenPos(1.f);
 
 
 void openfile(string file);
@@ -43,6 +44,7 @@ GLfloat mouse_z = 0;
 GLfloat light_x = 50.0f;
 GLfloat light_z = 50.0f;
 GLfloat ra = 0.0f;
+
 
 
 GLfloat points[34834 * 3] = {0.0f};
@@ -245,9 +247,13 @@ int main(){
 		GLint objectColorLoc = glGetUniformLocation(ourShader.Program, "objectColor");
 		GLint lightColorLoc = glGetUniformLocation(ourShader.Program, "lightColor");
 		GLint lightPosLoc = glGetUniformLocation(ourShader.Program, "lightPos");
+		GLint chosenPosLoc = glGetUniformLocation(ourShader.Program, "chosenPos");
+
 		glUniform3f(objectColorLoc, 1.0f, 0.5f, 0.31f);
 		glUniform3f(lightColorLoc, 1.0f, 0.5f, 1.0f);
 		glUniform3f(lightPosLoc, light_x , 50.0f, light_z);
+		glUniform3f(chosenPosLoc, chosenPos.x, chosenPos.y, chosenPos.z);
+		
 
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 		view = glm::lookAt(cameraPos, cameraFront, cameraUp);
@@ -293,17 +299,22 @@ void test_mat( ) {//测试每个点经过变化后的投影
 	glm::vec3 test1 = glm::vec3(1.f);
 	double data = 0;
 	double data_min = 10;
+	double data_z_min = 10;
 	int index = -1;
 	for (int i = 0; i < 34834; i++) {
 		test = glm::vec4(points[3 * i], points[3 * i + 1], points[3 * i + 2], 1.0f);
 		test = projection * view * model * test;
 		test1 = glm::vec3(test.x / test.w * 400 + 400, test.y / test.w * 300 + 300, test.z / test.w);
 		data = pow((test1.x - mouse_x), 2) + pow((test1.y - mouse_y), 2) + pow((test1.z - mouse_z), 2);
-		if (data < 10)
-			if (data < data_min) {
-				data_min = data;
-				index = i;
+		if (data < 10) {
+			if (test1.z < data_z_min) {
+				if (data < data_min) {
+					data_min = data;
+					data_z_min = test1.z;
+					index = i;
+				}
 			}
+		}
 	}
 	if (index < 0) {
 		std::cout << "Haven't choose any valid pots" << std::endl;
@@ -319,6 +330,8 @@ void test_mat( ) {//测试每个点经过变化后的投影
 		std::cout << "Chosen pot's cor_z is: " << std::endl;
 		std::cout << points[index * 3 + 2] << std::endl;
 		std::cout << "\n" << std::endl;
+		chosenPos = glm::vec3(points[index * 3], points[index * 3 + 1], points[index * 3 + 2]);
+		chosenPos = glm::vec3(model * glm::vec4(chosenPos, 1.0f));
 	}
 }
 

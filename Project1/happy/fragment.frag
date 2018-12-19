@@ -7,6 +7,7 @@ in vec3 FragPos;
 uniform vec3 lightPos; 
 uniform vec3 lightColor;
 uniform vec3 objectColor;
+uniform vec3 chosenPos;
 
 void main()
 {
@@ -19,4 +20,6 @@ void main()
 
     vec3 result = (ambient + diffuse) * objectColor;
     color = vec4(result, 1.0f);
+	if ( ( FragPos.x - chosenPos.x < 0.1) && ( FragPos.x - chosenPos.x > -0.1) && ( FragPos.y - chosenPos.y < 0.1) && ( FragPos.y - chosenPos.y > -0.1) && ( FragPos.z - chosenPos.z < 0.1) && ( FragPos.z - chosenPos.z > -0.1) )
+	  color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 }
