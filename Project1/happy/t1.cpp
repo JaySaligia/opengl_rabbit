@@ -32,15 +32,17 @@ void mouse_pos(GLFWwindow* window, GLdouble x, GLdouble y);
 void mouse_callback(GLFWwindow* window, int key, int action, int hold);
 void movement();
 
+//鼠标点击屏幕位置
 GLdouble mouse_x = 0.0;
 GLdouble mouse_y = 0.0;
 GLfloat mouse_z = 0;
 
-GLfloat init_x = 0;
-GLfloat init_y = 0;
-GLfloat init_z = 0;
 
 
+//灯光设置
+GLfloat light_x = 50.0f;
+GLfloat light_z = 50.0f;
+GLfloat ra = 0.0f;
 
 
 GLfloat points[34834 * 3] = {0.0f};
@@ -205,7 +207,7 @@ int main(){
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	//
+	/*
 	GLfloat points_test[] = {
 		0.75f, 0.75f, 0.0f
 	};
@@ -216,7 +218,7 @@ int main(){
 	glBindVertexArray(VAO1);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO1);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(points_test), points_test, GL_STATIC_DRAW);
-   //
+   */
 
 
 
@@ -245,7 +247,7 @@ int main(){
 		GLint lightPosLoc = glGetUniformLocation(ourShader.Program, "lightPos");
 		glUniform3f(objectColorLoc, 1.0f, 0.5f, 0.31f);
 		glUniform3f(lightColorLoc, 1.0f, 0.5f, 1.0f);
-		glUniform3f(lightPosLoc, -50.0f, 50.0f, -50.0f);
+		glUniform3f(lightPosLoc, light_x , 50.0f, light_z);
 
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 		view = glm::lookAt(cameraPos, cameraFront, cameraUp);
@@ -264,7 +266,7 @@ int main(){
 		glDrawElements(GL_TRIANGLES, indice_index, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
        
-		//
+		/*
 		glBindVertexArray(VAO1);
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO1);
@@ -272,7 +274,7 @@ int main(){
 		glDrawArrays(GL_POINTS, 0, 1);
 		glDisableVertexAttribArray(0);
 		glBindVertexArray(0);
-		//
+		*/
 
 		glfwSwapBuffers(window);
 	}
@@ -486,7 +488,11 @@ void movement() {
 			cam = cam * trans;
 			cameraUp = glm::vec3(cam.x, cam.y, cam.z);
 		}
-		
+		if (keys[GLFW_KEY_V]) {//灯光位置变化
+			ra += 0.01;
+			light_x = 50.0f * sin(ra);
+			light_z = 50.0f * cos(ra);
+		}
 
 }
 
