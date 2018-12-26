@@ -354,10 +354,8 @@ void mouse_pos(GLFWwindow* window, GLdouble x, GLdouble y){
 
 void mouse_callback(GLFWwindow* window, int key, int action, int hold) {
 	if (key == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS) {
-		glReadPixels((int)mouse_y, (int)mouse_x, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &mouse_z);
-		glm::vec4 now_vec = glm::vec4(1.f);
-		now_vec = glm::vec4(float(mouse_x), float(mouse_y), mouse_z, 1.0f);
-		now_vec = glm::inverse(model) * glm::inverse(view) * glm::inverse(projection) * now_vec;
+		glReadPixels((int)mouse_x, (int)mouse_y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &mouse_z);
+		
 
 	
 		std::cout << "the corrod_x is:" << std::endl;

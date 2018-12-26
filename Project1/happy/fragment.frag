@@ -17,7 +17,6 @@ void main()
     vec3 lightDir = normalize(lightPos - FragPos);
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = diff * lightColor;
-
     vec3 result = (ambient + diffuse) * objectColor;
     color = vec4(result, 1.0f);
 	if ( ( FragPos.x - chosenPos.x < 0.1) && ( FragPos.x - chosenPos.x > -0.1) && ( FragPos.y - chosenPos.y < 0.1) && ( FragPos.y - chosenPos.y > -0.1) && ( FragPos.z - chosenPos.z < 0.1) && ( FragPos.z - chosenPos.z > -0.1) )
