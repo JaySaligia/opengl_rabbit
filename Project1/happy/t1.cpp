@@ -209,22 +209,6 @@ int main(){
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	/*
-	GLfloat points_test[] = {
-		0.75f, 0.75f, 0.0f
-	};
-
-	GLuint VAO1, VBO1;
-	glGenVertexArrays(1, &VAO1);
-	glGenBuffers(1, &VBO1);
-	glBindVertexArray(VAO1);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO1);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(points_test), points_test, GL_STATIC_DRAW);
-   */
-
-
-
-
 
 	while (!glfwWindowShouldClose(window)){
 	
@@ -272,15 +256,6 @@ int main(){
 		glDrawElements(GL_TRIANGLES, indice_index, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
        
-		/*
-		glBindVertexArray(VAO1);
-		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO1);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), (GLvoid*)0);
-		glDrawArrays(GL_POINTS, 0, 1);
-		glDisableVertexAttribArray(0);
-		glBindVertexArray(0);
-		*/
 
 		glfwSwapBuffers(window);
 	}
@@ -303,11 +278,11 @@ void test_mat( ) {//测试每个点经过变化后的投影
 	int index = -1;
 	for (int i = 0; i < 34834; i++) {
 		test = glm::vec4(points[3 * i], points[3 * i + 1], points[3 * i + 2], 1.0f);
-		test = projection * view * model * test;
-		test1 = glm::vec3(test.x / test.w * 400 + 400, test.y / test.w * 300 + 300, test.z / test.w);
-		data = pow((test1.x - mouse_x), 2) + pow((test1.y - mouse_y), 2) + pow((test1.z - mouse_z), 2);
+		test = projection * view * model * test;//将原坐标转换为最终坐标
+		test1 = glm::vec3(test.x / test.w * 400 + 400, test.y / test.w * 300 + 300, test.z / test.w);//最终坐标转换为屏幕坐标
+		data = pow((test1.x - mouse_x), 2) + pow((test1.y - mouse_y), 2) + pow((test1.z - mouse_z), 2);//与鼠标点击的屏幕坐标做比较
 		if (data < 10) {
-			if (test1.z < data_z_min) {
+			if (test1.z < data_z_min) {//深度信息越小，越近，避免点到对面的面
 				if (data < data_min) {
 					data_min = data;
 					data_z_min = test1.z;
@@ -354,10 +329,7 @@ void mouse_pos(GLFWwindow* window, GLdouble x, GLdouble y){
 
 void mouse_callback(GLFWwindow* window, int key, int action, int hold) {
 	if (key == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS) {
-		glReadPixels((int)mouse_x, (int)mouse_y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &mouse_z);
-		
-
-	
+		glReadPixels((int)mouse_x, (int)mouse_y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &mouse_z);//求mouse_z，为深度信息
 		std::cout << "the corrod_x is:" << std::endl;
 		std::cout << mouse_x << std::endl;
 		std::cout << "; the corrod_y is:" << std::endl;
@@ -464,8 +436,10 @@ void movement() {
 
 		if (keys[GLFW_KEY_J]) {//向上转
 			//cameraFront -= cameraPos;
+			//摄像机所有坐标绕着这个向量旋转，保证视线内物体位置不变
+			//先让pos沿着弧线转，再将front，up也沿着转，达到物体核心相对位置不变的效果
 			glm::mat4 trans(1.f);
-			glm::vec3 nor = glm::normalize(glm::cross(cameraPos - cameraFront, cameraUp));//摄像机所有坐标绕着这个向量旋转，保证视线内物体位置不变
+			glm::vec3 nor = glm::normalize(glm::cross(cameraPos - cameraFront, cameraUp));//求pos绕着旋转的轴
 			glm::vec4 cam = glm::vec4(cameraPos.x, cameraPos.y, cameraPos.z, 1.0f);
 			trans = glm::rotate(trans, glm::radians(0.05f), nor);
 			cam = cam * trans;
