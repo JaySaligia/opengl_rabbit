@@ -17,8 +17,11 @@ using namespace std;
 const GLuint WIDTH = 800, HEIGHT =600;
 
 //camera
+//摄像机位置
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, -100.0f);
+//摄像机朝向
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, 0.0f);
+//摄像机法线（垂直）
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 glm::mat4 model(1.f);
 glm::mat4 view(1.f);
@@ -26,27 +29,32 @@ glm::mat4 projection(1.f);
 glm::vec3 chosenPos(1.f);
 
 
+//打开兔子模型
 void openfile(string file);
+//对点信息初始化处理
 void vertical_v();
+//处理键盘事件
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+//处理鼠标位置
 void mouse_pos(GLFWwindow* window, GLdouble x, GLdouble y);
+//处理鼠标点击事件
 void mouse_callback(GLFWwindow* window, int key, int action, int hold);
+//进行兔子的移动
 void movement();
-
-//鼠标点击屏幕位置
+//打印点信息
+void test_mat();
+//鼠标点击屏幕位置，x是x轴，y是y轴，z是深度
 GLdouble mouse_x = 0.0;
 GLdouble mouse_y = 0.0;
 GLfloat mouse_z = 0;
 
 
 
-//灯光设置
+//灯光设置，x，z为光源坐标，ra为选装角度（灯光环绕着模型）
 GLfloat light_x = 50.0f;
 GLfloat light_z = 50.0f;
 GLfloat ra = 0.0f;
-
-
-
+//点和切片信息
 GLfloat points[34834 * 3] = {0.0f};
 GLuint indices[69451 *3];
 GLfloat points_ver[34834 * 3];
@@ -54,12 +62,14 @@ GLfloat points_comp[34834 * 6];
 
 int point_index = 0;
 int indice_index = 0;
-
+//键盘事件监听
 bool keys[1024];
+//移动速度信息
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 
 void openfile(string file){
+	//读取兔子模型文件，将点的信息和三角切片的信息储存到数组中
 	ifstream infile;
 	infile.open(file.data());
 	assert(infile.is_open());
@@ -196,7 +206,7 @@ int main(){
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);
 
 	
-
+	//根据自己的设置读取不同长度
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
 
@@ -209,6 +219,7 @@ int main(){
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	while (!glfwWindowShouldClose(window)){
 	
@@ -254,6 +265,7 @@ int main(){
 
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, indice_index, GL_UNSIGNED_INT, 0);
+		//glDrawElements(GL_LINES, indice_index, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
        
 
@@ -478,7 +490,11 @@ void movement() {
 			light_x = 50.0f * sin(ra);
 			light_z = 50.0f * cos(ra);
 		}
-
+		if (keys[GLFW_KEY_P]) {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}
+		
+		
 }
 
 
